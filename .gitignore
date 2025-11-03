@@ -1,0 +1,105 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# Environment variables
+.env
+.env.local
+
+# Data (large files)
+data/raw/*.csv
+data/raw/*.json
+data/raw/*.parquet
+data/processed/*.csv
+data/processed/*.json
+data/processed/*.parquet
+
+# Models (large files - use Git LFS if needed)
+models/bert_finetuned/*.bin
+models/bert_finetuned/*.safetensors
+models/bert_finetuned/pytorch_model.bin
+models/experiments/
+*.pt
+*.pth
+*.ckpt
+
+# MLflow
+mlruns/
+mlflow.db
+
+# Logs
+logs/*.log
+logs/*.txt
+*.log
+
+# Cache
+.cache/
+*.cache
+.pytest_cache/
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# DVC
+.dvc/tmp
+.dvc/cache
+
+# Docker
+*.dockerfile.swp
+
+# Ngrok
+ngrok
+*.ngrok.io
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Monitoring
+monitoring/grafana/grafana.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
