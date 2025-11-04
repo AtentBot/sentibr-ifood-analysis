@@ -46,3 +46,6 @@ pyyaml
 requests
 tqdm
 loguru
+matplotlib 
+seaborn 
+wordcloud

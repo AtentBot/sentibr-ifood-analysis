@@ -1,0 +1,8 @@
+{
+  "model_name": "neuralmind/bert-base-portuguese-cased",
+  "num_labels": 3,
+  "max_length": 512,
+  "learning_rate": 2e-05,
+  "batch_size": 16,
+  "num_epochs": 3
+}
