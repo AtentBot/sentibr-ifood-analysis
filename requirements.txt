@@ -21,6 +21,13 @@ mlflow
 optuna
 great-expectations
 
+# Visualization
+matplotlib
+seaborn
+
+# Progress bars
+tqdm
+
 # API Framework
 fastapi
 uvicorn[standard]
@@ -54,6 +61,16 @@ emoji
 unidecode
 plotly
 
+# Async support
+aiohttp
+asyncio
+python-dotenv
+
+# Testing (optional)
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
 # Utilities
 python-dotenv
 pyyaml
@@ -83,3 +100,14 @@ mypy
 # Load Testing
 locust
 python-json-logger
+
+# Jupyter (para notebooks)
+jupyter
+ipykernel
+nbformat
+
+# Already required from other phases (for reference)
+# torch
+# transformers
+# fastapi
+# pydantic

@@ -1,21 +1,13 @@
 """
-SentiBR - Sistema de Análise de Sentimentos para Reviews do iFood
+SentiBR - Sistema de Analise de Sentimentos
 App Principal - Home Page
 """
 import streamlit as st
-from pathlib import Path
-import sys
 
-# Adicionar src ao path para imports
-sys.path.append(str(Path(__file__).parent.parent))
-
-from components.ui_components import metric_card
-
-
-# Configuração da página
+# Configuracao da pagina
 st.set_page_config(
-    page_title="SentiBR - Análise de Sentimentos iFood",
-    page_icon="🍔",
+    page_title="SentiBR - Analise de Sentimentos",
+    page_icon="🍽️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -26,7 +18,7 @@ st.markdown("""
     .main-header {
         text-align: center;
         padding: 2rem 0;
-        background: linear-gradient(135deg, #EA1D2C 0%, #C41622 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border-radius: 12px;
         margin-bottom: 2rem;
@@ -42,109 +34,57 @@ st.markdown("""
     }
     
     .feature-card:hover {
-        border-color: #EA1D2C;
-        box-shadow: 0 4px 12px rgba(234, 29, 44, 0.15);
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
         transform: translateY(-2px);
-    }
-    
-    .tech-badge {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        margin: 0.25rem;
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 500;
     }
 </style>
 """, unsafe_allow_html=True)
 
-
-def load_logo():
-    """Carrega e exibe o logo do iFood"""
-    logo_path = Path(__file__).parent / "assets" / "ifood_logo.jpeg"
-    if logo_path.exists():
-        return str(logo_path)
-    return None
-
-
 def main():
-    """Função principal da página Home"""
+    """Funcao principal da pagina Home"""
     
-    # Header com logo
-    col1, col2, col3 = st.columns([1, 2, 1])
-    
-    with col2:
-        logo_path = load_logo()
-        if logo_path:
-            st.image(logo_path, width=300)
-    
+    # Header
     st.markdown("""
     <div class="main-header">
-        <h1>🍔 SentiBR - Análise de Sentimentos</h1>
+        <h1>🍽️ SentiBR - Analise de Sentimentos</h1>
         <p style="font-size: 1.2rem; margin-top: 1rem;">
-            Sistema inteligente de análise de reviews do iFood usando BERT e GPT
+            Sistema inteligente de analise de reviews usando BERT e GPT
         </p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Descrição do projeto
+    # Descricao do projeto
     st.markdown("## 📋 Sobre o Projeto")
     
     st.markdown("""
-    O **SentiBR** é um sistema completo de análise de sentimentos desenvolvido especialmente 
-    para reviews de restaurantes do iFood. Utilizando modelos de linguagem avançados (BERT fine-tunado 
+    O **SentiBR** é um sistema completo de analise de sentimentos desenvolvido especialmente 
+    para reviews de restaurantes. Utilizando modelos de linguagem avancados (BERT fine-tunado 
     e GPT-4o-mini), o sistema oferece:
     
-    - 🎯 **Classificação de Sentimento** em tempo real (Positivo, Negativo, Neutro)
-    - 🔍 **Explicabilidade** visual das predições
-    - 🆚 **Comparação BERT vs GPT** lado a lado
-    - 📊 **Monitoramento** contínuo de performance
+    - 🎯 **Classificacao de Sentimento** em tempo real (Positivo, Negativo, Neutro)
+    - 🔍 **Explicabilidade** visual das predicoes
+    - 🆚 **Comparacao BERT vs GPT** lado a lado
+    - 📊 **Monitoramento** continuo de performance
     - 🎨 **Interface intuitiva** e responsiva
-    - 🔄 **Feedback Loop** para melhoria contínua
     """)
     
-    # Métricas do sistema
-    st.markdown("## 📈 Estatísticas do Sistema")
+    # Metricas do sistema
+    st.markdown("## 📈 Estatisticas do Sistema")
     
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        metric_card(
-            title="Reviews Analisadas",
-            value="150K+",
-            delta="+5.2K hoje",
-            icon="📊",
-            color="#EA1D2C"
-        )
+        st.metric("Reviews Analisadas", "150K+", "+5.2K hoje")
     
     with col2:
-        metric_card(
-            title="Acurácia Modelo",
-            value="94.7%",
-            delta="+2.3%",
-            icon="🎯",
-            color="#28a745"
-        )
+        st.metric("Acuracia Modelo", "94.7%", "+2.3%")
     
     with col3:
-        metric_card(
-            title="Latência Média",
-            value="45ms",
-            delta="-12ms",
-            icon="⚡",
-            color="#17a2b8"
-        )
+        st.metric("Latencia Media", "45ms", "-12ms")
     
     with col4:
-        metric_card(
-            title="Uptime",
-            value="99.9%",
-            delta="",
-            icon="✅",
-            color="#6c757d"
-        )
+        st.metric("Uptime", "99.9%", "")
     
     # Features principais
     st.markdown("## ✨ Funcionalidades Principais")
@@ -154,16 +94,16 @@ def main():
     with col1:
         st.markdown("""
         <div class="feature-card">
-            <h3 style="color: #EA1D2C;">🧪 Análise em Tempo Real</h3>
+            <h3 style="color: #667eea;">🧪 Analise em Tempo Real</h3>
             <p>
                 Digite ou cole qualquer review de restaurante e receba 
-                instantaneamente a análise de sentimento com explicação 
-                detalhada e nível de confiança.
+                instantaneamente a analise de sentimento com explicacao 
+                detalhada e nivel de confianca.
             </p>
             <ul>
-                <li>Análise instantânea</li>
+                <li>Analise instantanea</li>
                 <li>Explicabilidade visual</li>
-                <li>Análise por aspectos</li>
+                <li>Analise por aspectos</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -171,14 +111,14 @@ def main():
     with col2:
         st.markdown("""
         <div class="feature-card">
-            <h3 style="color: #EA1D2C;">🆚 Comparação de Modelos</h3>
+            <h3 style="color: #667eea;">🆚 Comparacao de Modelos</h3>
             <p>
-                Compare lado a lado as predições do BERT fine-tunado 
-                com GPT-4o-mini e entenda as diferenças entre os modelos.
+                Compare lado a lado as predicoes do BERT fine-tunado 
+                com GPT-4o-mini e entenda as diferencas entre os modelos.
             </p>
             <ul>
                 <li>BERT vs GPT-4o-mini</li>
-                <li>Métricas de latência</li>
+                <li>Metricas de latencia</li>
                 <li>Trade-offs explicados</li>
             </ul>
         </div>
@@ -187,50 +127,18 @@ def main():
     with col3:
         st.markdown("""
         <div class="feature-card">
-            <h3 style="color: #EA1D2C;">📊 Monitoramento 24/7</h3>
+            <h3 style="color: #667eea;">📊 Monitoramento 24/7</h3>
             <p>
-                Dashboard completo com métricas em tempo real, 
-                detecção de drift e alertas de performance.
+                Dashboard completo com metricas em tempo real, 
+                deteccao de drift e alertas de performance.
             </p>
             <ul>
-                <li>Métricas Prometheus</li>
+                <li>Metricas Prometheus</li>
                 <li>Grafana dashboards</li>
-                <li>Detecção de drift</li>
+                <li>Deteccao de drift</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
-    
-    # Arquitetura
-    st.markdown("## 🗃️ Arquitetura do Sistema")
-    
-    st.markdown("""
-    ```
-    ┌──────────────────────────────────────────────────────────┐
-    │                    Frontend (Streamlit)                      │
-    │  • Interface de Análise  • Dashboard  • Feedback System      │
-    └────────────────────┬─────────────────────────────────────┘
-                         │
-                         ▼
-    ┌──────────────────────────────────────────────────────────┐
-    │                      API REST (FastAPI)                      │
-    │  • /predict  • /predict/batch  • /predict/compare  • /health│
-    └────────────────────┬─────────────────────────────────────┘
-                         │
-           ┌─────────────┴─────────────┐
-           ▼                           ▼
-    ┌──────────────┐          ┌──────────────┐
-    │ BERT Model   │          │ GPT-4o-mini  │
-    │ Fine-tuned   │          │ (OpenAI API) │
-    └──────────────┘          └──────────────┘
-           │                           │
-           └─────────────┬─────────────┘
-                         ▼
-    ┌──────────────────────────────────────────────────────────┐
-    │                    Observabilidade                           │
-    │  • Prometheus  • Grafana  • MLflow  • Logging               │
-    └──────────────────────────────────────────────────────────┘
-    ```
-    """)
     
     # Tech Stack
     st.markdown("## 🛠️ Tech Stack")
@@ -240,44 +148,36 @@ def main():
     with col1:
         st.markdown("### Machine Learning")
         st.markdown("""
-        <div>
-            <span class="tech-badge">🤗 Transformers</span>
-            <span class="tech-badge">🔥 PyTorch</span>
-            <span class="tech-badge">🧠 BERT</span>
-            <span class="tech-badge">🤖 OpenAI GPT</span>
-            <span class="tech-badge">📊 Scikit-learn</span>
-        </div>
-        """, unsafe_allow_html=True)
+        - 🤗 **Transformers** - BERT fine-tuning
+        - 🔥 **PyTorch** - Deep learning framework
+        - 🧠 **BERT** - neuralmind/bert-base-portuguese-cased
+        - 🤖 **GPT-4o-mini** - OpenAI API
+        - 📊 **Scikit-learn** - Metricas e avaliacao
+        """)
         
         st.markdown("### API & Backend")
         st.markdown("""
-        <div>
-            <span class="tech-badge">⚡ FastAPI</span>
-            <span class="tech-badge">🔄 Uvicorn</span>
-            <span class="tech-badge">📝 Pydantic</span>
-            <span class="tech-badge">🐍 Python 3.10+</span>
-        </div>
-        """, unsafe_allow_html=True)
+        - ⚡ **FastAPI** - REST API framework
+        - 🔄 **Uvicorn** - ASGI server
+        - 🔐 **Pydantic** - Data validation
+        - 🐍 **Python 3.10+** - Linguagem principal
+        """)
     
     with col2:
         st.markdown("### Frontend & UI")
         st.markdown("""
-        <div>
-            <span class="tech-badge">🎨 Streamlit</span>
-            <span class="tech-badge">📈 Plotly</span>
-            <span class="tech-badge">🎯 Pandas</span>
-        </div>
-        """, unsafe_allow_html=True)
+        - 🎨 **Streamlit** - Interface web
+        - 📈 **Plotly** - Visualizacoes interativas
+        - 🎯 **Pandas** - Manipulacao de dados
+        """)
         
         st.markdown("### Observabilidade")
         st.markdown("""
-        <div>
-            <span class="tech-badge">📊 Prometheus</span>
-            <span class="tech-badge">📈 Grafana</span>
-            <span class="tech-badge">🔬 MLflow</span>
-            <span class="tech-badge">🐳 Docker</span>
-        </div>
-        """, unsafe_allow_html=True)
+        - 📊 **Prometheus** - Metricas
+        - 📈 **Grafana** - Dashboards
+        - 🔬 **MLflow** - Experiment tracking
+        - 🐳 **Docker** - Containerizacao
+        """)
     
     # Quick Start
     st.markdown("## 🚀 Quick Start")
@@ -288,39 +188,60 @@ def main():
         st.info("""
         **👉 Experimente agora!**
         
-        1. Vá para a página **🔍 Análise de Sentimentos**
+        1. Va para a pagina **🔍 Analise Individual**
         2. Digite ou cole um review de restaurante
         3. Clique em **Analisar**
-        4. Veja o resultado instantâneo!
+        4. Veja o resultado instantaneo!
         """)
     
     with col2:
         st.success("""
         **📚 Explore o sistema:**
         
-        - **📊 Métricas**: Dashboard em tempo real
-        - **💬 Feedback**: Ajude a melhorar o modelo
-        - **🔍 Monitor**: Acompanhe a performance
+        - **📊 Dashboard**: Visualizacao de metricas
+        - **📦 Analise em Lote**: Processe multiplos reviews
+        - **🔎 Avaliacao**: Teste a acuracia do modelo
+        - **⚔️ Comparacao**: BERT vs GPT lado a lado
         """)
     
     # Footer
     st.markdown("---")
     st.markdown("""
     <div style="text-align: center; color: #666; padding: 2rem 0;">
-        <p>Desenvolvido com ❤️ para o desafio técnico de IA Sênior</p>
-        <p>
-            <a href="https://github.com" target="_blank" style="color: #EA1D2C; text-decoration: none;">
-                📦 GitHub
-            </a> | 
-            <a href="https://docs.example.com" target="_blank" style="color: #EA1D2C; text-decoration: none;">
-                📚 Documentação
-            </a> | 
-            <a href="mailto:contato@example.com" style="color: #EA1D2C; text-decoration: none;">
-                ✉️ Contato
-            </a>
-        </p>
+        <p>Desenvolvido com ❤️ para analise de sentimentos</p>
+        <p>SentiBR v1.0.0 | API: <a href="http://localhost:8000/docs" target="_blank">localhost:8000/docs</a></p>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Sidebar info
+    with st.sidebar:
+        st.markdown("## 🎯 Navegacao")
+        st.markdown("""
+        Use o menu acima para navegar entre as paginas:
+        
+        - 🏠 **Home** - Pagina inicial
+        - 📊 **Dashboard** - Visao geral
+        - 🔍 **Analise Individual** - Analise unica
+        - 📦 **Analise em Lote** - Multiplos reviews
+        - 🔎 **Avaliacao** - Teste o modelo
+        - ⚔️ **Comparacao** - BERT vs GPT
+        - 🤖 **LLM Judge** - Avaliacao com IA
+        - 📈 **Monitoramento** - Status do sistema
+        """)
+        
+        st.markdown("---")
+        
+        # Status da API
+        st.markdown("### ⚡ Status do Sistema")
+        try:
+            import requests
+            response = requests.get("http://api:8000/api/v1/health", timeout=2)
+            if response.status_code == 200:
+                st.success("API Online ✅")
+            else:
+                st.error("API Offline ❌")
+        except:
+            st.warning("API nao acessivel ⚠️")
 
 
 if __name__ == "__main__":
