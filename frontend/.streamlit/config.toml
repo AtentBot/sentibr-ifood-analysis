@@ -1,0 +1,17 @@
+[theme]
+primaryColor = "#EA1D2C"  # Vermelho iFood
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F5F5F5"
+textColor = "#262626"
+font = "sans serif"
+
+[server]
+port = 8502
+headless = true
+enableCORS = false
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
+serverAddress = "localhost"
+serverPort = 8501

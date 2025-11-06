@@ -6,6 +6,15 @@ scikit-learn
 numpy
 pandas
 scipy
+accelerate
+streamlit
+streamlit-option-menu
+
+# API Framework
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart
 
 # MLOps & Experiment Tracking
 mlflow
@@ -26,6 +35,7 @@ altair
 # Monitoring & Observability
 prometheus-client
 prometheus-fastapi-instrumentator
+python-json-logger
 
 # LLM Integration
 openai
@@ -35,10 +45,14 @@ tiktoken
 shap
 lime
 
-# Data Processing
+# Data Processing & Visualization
+pandas
+numpy
+scikit-learn
 nltk
 emoji
 unidecode
+plotly
 
 # Utilities
 python-dotenv
@@ -49,3 +63,23 @@ loguru
 matplotlib 
 seaborn 
 wordcloud
+python-dateutil
+
+# Optional: Explainability
+lime
+shap
+
+# Optional: OpenAI integration
+openai
+
+# Development
+pytest
+pytest-asyncio
+httpx
+black
+flake8
+mypy
+
+# Load Testing
+locust
+python-json-logger

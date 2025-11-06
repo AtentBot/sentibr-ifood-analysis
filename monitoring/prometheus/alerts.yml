@@ -1,0 +1,217 @@
+# Alert Rules for SentiBR
+# Define quando disparar alertas baseado nas métricas
+
+groups:
+  # ============================================
+  # API Health Alerts
+  # ============================================
+  - name: api_health
+    interval: 30s
+    rules:
+      # Alerta se API estiver down
+      - alert: APIDown
+        expr: up{job="sentibr-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "SentiBR API is down"
+          description: "API has been down for more than 1 minute"
+          
+      # Alerta se alta taxa de erros
+      - alert: HighErrorRate
+        expr: |
+          (
+            rate(http_requests_total{job="sentibr-api",status=~"5.."}[5m])
+            /
+            rate(http_requests_total{job="sentibr-api"}[5m])
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High error rate on API"
+          description: "Error rate is above 5% (current: {{ $value | humanizePercentage }})"
+          
+      # Alerta se latência P99 muito alta
+      - alert: HighLatencyP99
+        expr: |
+          histogram_quantile(0.99,
+            rate(http_request_duration_seconds_bucket{job="sentibr-api"}[5m])
+          ) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High P99 latency on API"
+          description: "P99 latency is above 200ms (current: {{ $value }}s)"
+          
+      # Alerta se latência P99 crítica
+      - alert: CriticalLatencyP99
+        expr: |
+          histogram_quantile(0.99,
+            rate(http_request_duration_seconds_bucket{job="sentibr-api"}[5m])
+          ) > 0.5
+        for: 2m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "Critical P99 latency on API"
+          description: "P99 latency is above 500ms (current: {{ $value }}s)"
+  
+  # ============================================
+  # Model Performance Alerts
+  # ============================================
+  - name: model_performance
+    interval: 60s
+    rules:
+      # Alerta se confiança média caiu muito
+      - alert: LowAverageConfidence
+        expr: |
+          avg_over_time(model_prediction_confidence_avg[10m]) < 0.7
+        for: 5m
+        labels:
+          severity: warning
+          component: model
+        annotations:
+          summary: "Low average model confidence"
+          description: "Average confidence is below 70% (current: {{ $value | humanizePercentage }})"
+          
+      # Alerta se muitas predições de baixa confiança
+      - alert: HighLowConfidencePredictions
+        expr: |
+          (
+            rate(model_predictions_total{confidence="low"}[10m])
+            /
+            rate(model_predictions_total[10m])
+          ) > 0.3
+        for: 5m
+        labels:
+          severity: warning
+          component: model
+        annotations:
+          summary: "High rate of low confidence predictions"
+          description: "More than 30% of predictions have low confidence"
+  
+  # ============================================
+  # Data Drift Alerts
+  # ============================================
+  - name: data_drift
+    interval: 60s
+    rules:
+      # Alerta se drift elevado (warning)
+      - alert: DataDriftWarning
+        expr: model_data_drift_score > 0.15
+        for: 10m
+        labels:
+          severity: warning
+          component: model
+        annotations:
+          summary: "Data drift detected (warning level)"
+          description: "Drift score is above 15% (current: {{ $value | humanizePercentage }}). Consider retraining."
+          
+      # Alerta se drift crítico
+      - alert: DataDriftCritical
+        expr: model_data_drift_score > 0.25
+        for: 5m
+        labels:
+          severity: critical
+          component: model
+        annotations:
+          summary: "Critical data drift detected!"
+          description: "Drift score is above 25% (current: {{ $value | humanizePercentage }}). Immediate retraining required!"
+          
+      # Alerta se distribuição de features mudou muito
+      - alert: FeatureDistributionShift
+        expr: model_feature_distribution_ks_statistic > 0.3
+        for: 15m
+        labels:
+          severity: warning
+          component: model
+        annotations:
+          summary: "Significant feature distribution shift"
+          description: "KS statistic is above 0.3 (current: {{ $value }})"
+  
+  # ============================================
+  # Resource Alerts
+  # ============================================
+  - name: resources
+    interval: 30s
+    rules:
+      # Alerta se CPU muito alta
+      - alert: HighCPUUsage
+        expr: |
+          100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 80% (current: {{ $value }}%)"
+          
+      # Alerta se memória muito alta
+      - alert: HighMemoryUsage
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 85% (current: {{ $value }}%)"
+          
+      # Alerta se disco cheio
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is below 10% (current: {{ $value }}%)"
+  
+  # ============================================
+  # Business Metrics Alerts
+  # ============================================
+  - name: business_metrics
+    interval: 60s
+    rules:
+      # Alerta se taxa de feedback muito baixa
+      - alert: LowFeedbackRate
+        expr: |
+          (
+            rate(feedback_submissions_total[1h])
+            /
+            rate(model_predictions_total[1h])
+          ) < 0.01
+        for: 30m
+        labels:
+          severity: info
+          component: business
+        annotations:
+          summary: "Low user feedback rate"
+          description: "Feedback rate is below 1% (current: {{ $value | humanizePercentage }})"
+          
+      # Alerta se sentimento negativo muito alto
+      - alert: HighNegativeSentimentRate
+        expr: |
+          (
+            rate(model_predictions_total{sentiment="negative"}[1h])
+            /
+            rate(model_predictions_total[1h])
+          ) > 0.5
+        for: 30m
+        labels:
+          severity: info
+          component: business
+        annotations:
+          summary: "High rate of negative sentiment predictions"
+          description: "More than 50% of predictions are negative. Check for issues with restaurants."

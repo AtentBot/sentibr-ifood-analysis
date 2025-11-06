@@ -1,0 +1,92 @@
+{
+  "dashboard": {
+    "title": "SentiBR - Model Performance",
+    "tags": ["sentibr", "model", "ml"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "type": "stat",
+        "title": "Total Predictions (24h)",
+        "targets": [{
+          "expr": "sum(increase(model_predictions_total[24h]))",
+          "legendFormat": "Predictions"
+        }]
+      },
+      {
+        "id": 2,
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "type": "stat",
+        "title": "Average Confidence",
+        "targets": [{
+          "expr": "avg(model_prediction_confidence_avg)",
+          "legendFormat": "Confidence"
+        }]
+      },
+      {
+        "id": 3,
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "type": "stat",
+        "title": "Drift Score",
+        "targets": [{
+          "expr": "model_data_drift_score",
+          "legendFormat": "Drift"
+        }]
+      },
+      {
+        "id": 4,
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "type": "stat",
+        "title": "P95 Inference Time",
+        "targets": [{
+          "expr": "histogram_quantile(0.95, rate(model_inference_duration_seconds_bucket[5m]))",
+          "legendFormat": "P95"
+        }]
+      },
+      {
+        "id": 5,
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "type": "timeseries",
+        "title": "Predictions by Sentiment",
+        "targets": [
+          {
+            "expr": "sum(rate(model_predictions_total{sentiment=\"positive\"}[5m])) * 60",
+            "legendFormat": "Positive"
+          },
+          {
+            "expr": "sum(rate(model_predictions_total{sentiment=\"negative\"}[5m])) * 60",
+            "legendFormat": "Negative"
+          },
+          {
+            "expr": "sum(rate(model_predictions_total{sentiment=\"neutral\"}[5m])) * 60",
+            "legendFormat": "Neutral"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "type": "timeseries",
+        "title": "Confidence Distribution",
+        "targets": [
+          {
+            "expr": "sum(rate(model_predictions_total{confidence_level=\"high\"}[5m])) * 60",
+            "legendFormat": "High (>90%)"
+          },
+          {
+            "expr": "sum(rate(model_predictions_total{confidence_level=\"medium\"}[5m])) * 60",
+            "legendFormat": "Medium (70-90%)"
+          },
+          {
+            "expr": "sum(rate(model_predictions_total{confidence_level=\"low\"}[5m])) * 60",
+            "legendFormat": "Low (<70%)"
+          }
+        ]
+      }
+    ]
+  }
+}

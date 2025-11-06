@@ -1,0 +1,55 @@
+# Prometheus Configuration for SentiBR
+# Coleta métricas da API FastAPI e exporters customizados
+
+global:
+  scrape_interval: 15s          # Coletar métricas a cada 15 segundos
+  evaluation_interval: 15s       # Avaliar regras a cada 15 segundos
+  external_labels:
+    cluster: 'sentibr-production'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Carregar regras de alerta
+rule_files:
+  - "alerts.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Job 1: Métricas da API FastAPI
+  - job_name: 'sentibr-api'
+    static_configs:
+      - targets: ['api:8000']
+    metrics_path: '/api/v1/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Job 2: Métricas do Prometheus (self-monitoring)
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Job 3: Node Exporter (métricas do sistema)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+
+  # Job 4: Métricas customizadas do modelo
+  - job_name: 'sentibr-model-metrics'
+    static_configs:
+      - targets: ['api:8000']
+    metrics_path: '/api/v1/metrics/model'
+    scrape_interval: 30s
+
+  # Job 5: Drift detector
+  - job_name: 'sentibr-drift'
+    static_configs:
+      - targets: ['api:8000']
+    metrics_path: '/api/v1/metrics/drift'
+    scrape_interval: 60s  # Checar drift a cada minuto

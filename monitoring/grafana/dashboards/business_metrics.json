@@ -1,0 +1,105 @@
+{
+  "dashboard": {
+    "title": "SentiBR - Business Metrics",
+    "tags": ["sentibr", "business", "metrics"],
+    "refresh": "1m",
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "type": "stat",
+        "title": "Reviews Processed Today",
+        "targets": [{
+          "expr": "business_reviews_processed_today",
+          "legendFormat": "Reviews"
+        }]
+      },
+      {
+        "id": 2,
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "type": "stat",
+        "title": "Positive Rate",
+        "targets": [{
+          "expr": "(sum(rate(model_predictions_total{sentiment=\"positive\"}[1h])) / sum(rate(model_predictions_total[1h]))) * 100",
+          "legendFormat": "Positive %"
+        }]
+      },
+      {
+        "id": 3,
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "type": "stat",
+        "title": "Feedback Rate",
+        "targets": [{
+          "expr": "(sum(rate(feedback_submissions_total[1h])) / sum(rate(model_predictions_total[1h]))) * 100",
+          "legendFormat": "Feedback %"
+        }]
+      },
+      {
+        "id": 4,
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "type": "stat",
+        "title": "Accuracy (from feedback)",
+        "targets": [{
+          "expr": "(sum(rate(feedback_submissions_total{is_correct=\"true\"}[24h])) / sum(rate(feedback_submissions_total[24h]))) * 100",
+          "legendFormat": "Accuracy %"
+        }]
+      },
+      {
+        "id": 5,
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "type": "piechart",
+        "title": "Sentiment Distribution",
+        "targets": [
+          {
+            "expr": "sum(increase(model_predictions_total{sentiment=\"positive\"}[24h]))",
+            "legendFormat": "Positive"
+          },
+          {
+            "expr": "sum(increase(model_predictions_total{sentiment=\"negative\"}[24h]))",
+            "legendFormat": "Negative"
+          },
+          {
+            "expr": "sum(increase(model_predictions_total{sentiment=\"neutral\"}[24h]))",
+            "legendFormat": "Neutral"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "type": "timeseries",
+        "title": "Sentiment Trends (7 days)",
+        "targets": [
+          {
+            "expr": "sum(rate(model_predictions_total{sentiment=\"positive\"}[1h])) * 60",
+            "legendFormat": "Positive/min"
+          },
+          {
+            "expr": "sum(rate(model_predictions_total{sentiment=\"negative\"}[1h])) * 60",
+            "legendFormat": "Negative/min"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+        "type": "timeseries",
+        "title": "Feedback Submissions Over Time",
+        "targets": [{
+          "expr": "sum(rate(feedback_submissions_total[5m])) * 60",
+          "legendFormat": "Feedbacks/min"
+        }]
+      },
+      {
+        "id": 8,
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+        "type": "timeseries",
+        "title": "Correction Rate",
+        "targets": [{
+          "expr": "(sum(rate(feedback_submissions_total{is_correct=\"false\"}[1h])) / sum(rate(feedback_submissions_total[1h]))) * 100",
+          "legendFormat": "Corrections %"
+        }]
+      }
+    ]
+  }
+}
