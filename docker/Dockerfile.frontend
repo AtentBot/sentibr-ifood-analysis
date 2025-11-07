@@ -1,10 +1,9 @@
 # ============================================
-# SentiBR Frontend - CORRIGIDO E TESTADO
+# SentiBR Frontend - Context na RAIZ
 # ============================================
 
 FROM ubuntu:22.04
 
-# Variáveis de ambiente
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     STREAMLIT_SERVER_PORT=8501 \
@@ -12,7 +11,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     STREAMLIT_SERVER_HEADLESS=true \
     STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
 
-# Diretório de trabalho
 WORKDIR /app
 
 # Instalar Python e dependências
@@ -20,20 +18,28 @@ RUN apt-get update && \
     apt-get install -y \
     python3.10 \
     python3-pip \
+    python3.10-distutils \
     curl \
     git \
-    && rm -rf /var/lib/apt/lists/* && \
-    ln -s /usr/bin/python3 /usr/bin/python
+    && rm -rf /var/lib/apt/lists/*
 
-# Copiar e instalar requirements
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Criar links simbólicos
+RUN ln -sf /usr/bin/python3 /usr/bin/python && \
+    ln -sf /usr/bin/pip3 /usr/bin/pip
 
-# Copiar código do frontend
-COPY . .
+# Atualizar pip
+RUN python3 -m pip install --upgrade pip setuptools wheel
 
-# Criar diretório Streamlit
-RUN mkdir -p /root/.streamlit
+# Copiar requirements específico do FRONTEND (está em frontend/requirements.txt)
+COPY frontend/requirements.txt .
+RUN python3 -m pip install --no-cache-dir -r requirements.txt
+
+# Copiar TODO conteúdo da pasta frontend para /app
+COPY frontend/ .
+
+# Criar diretório .streamlit no home do root
+RUN mkdir -p /root/.streamlit && \
+    if [ -d /app/.streamlit ]; then cp -r /app/.streamlit/* /root/.streamlit/ 2>/dev/null || true; fi
 
 # Porta
 EXPOSE 8501
@@ -42,5 +48,10 @@ EXPOSE 8501
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8501/_stcore/health || exit 1
 
-# Executar Streamlit (GARANTINDO 0.0.0.0)
-CMD ["python3", "-m", "streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]
+# Executar Streamlit (agora app.py está em /app/app.py)
+CMD ["python3", "-m", "streamlit", "run", "app.py", \
+     "--server.port=8501", \
+     "--server.address=0.0.0.0", \
+     "--server.headless=true", \
+     "--server.enableCORS=false", \
+     "--server.enableXsrfProtection=false"]

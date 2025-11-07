@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   # ============================================================================
-  # MLFLOW - Experiment Tracking (CORRIGIDO)
+  # MLFLOW - Experiment Tracking
   # ============================================================================
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.9.2
@@ -37,7 +37,7 @@ services:
       start_period: 40s
 
   # ============================================================================
-  # POSTGRES - Database (para API e MLflow futuro)
+  # POSTGRES - Database
   # ============================================================================
   postgres:
     image: postgres:15-alpine
@@ -80,18 +80,19 @@ services:
       retries: 5
 
   # ============================================================================
-  # API - FastAPI Backend
+  # API - FastAPI Backend (CORRIGIDO)
   # ============================================================================
   api:
     build:
-      context: ./api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/Dockerfile.api
     container_name: sentibr-api
     ports:
       - "8000:8000"
     volumes:
-      - ./api:/app
+      - ./src:/app/src
       - ./models:/app/models
+      - ./data:/app/data
     environment:
       - ENVIRONMENT=production
       - POSTGRES_HOST=postgres
@@ -108,32 +109,45 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      mlflow:
-        condition: service_healthy
+      mlflow:                       
+        condition: service_started
     networks:
       - sentibr-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # ============================================================================
-  # FRONTEND - Streamlit
+  # FRONTEND - Streamlit (CORRIGIDO)
   # ============================================================================
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/Dockerfile.frontend
     container_name: sentibr-frontend
     ports:
-      - "8502:8501"
+      - "8501:8501"
     volumes:
-      - ./frontend:/app
+      - ./frontend:/app/frontend
     environment:
       - API_URL=http://api:8000
       - MLFLOW_URL=http://mlflow:5000
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     networks:
       - sentibr-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # ============================================================================
   # PROMETHEUS - Metrics
@@ -144,7 +158,8 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/alerts.yml:/etc/prometheus/alerts.yml
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -165,11 +180,13 @@ services:
       - "3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=sentibr_grafana_2024
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=
     depends_on:
       - prometheus
     networks:
