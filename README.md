@@ -590,9 +590,9 @@ Desenvolvido com ❤️ para demonstrar excelência em Data Science e MLOps.
 
 ## 📞 Contato
 
-- 📧 Email: seu-email@example.com
-- 💼 LinkedIn: [seu-linkedin](https://linkedin.com)
-- 🐙 GitHub: [seu-github](https://github.com)
+- 📧 Email: contato@douglasbraga.com
+- 💼 LinkedIn: [linkedin](https://www.linkedin.com/in/dgbraga/)
+
 
 ---
 

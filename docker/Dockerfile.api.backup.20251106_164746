@@ -1,0 +1,47 @@
+# ============================================
+# SentiBR API - ATUALIZADO
+# ============================================
+
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Instalar Python e dependências
+RUN apt-get update && \
+    apt-get install -y \
+    python3.10 \
+    python3-pip \
+    curl \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/* && \
+    ln -s /usr/bin/python3 /usr/bin/python
+
+# Copiar requirements e instalar (arquivo DEVE estar em api/requirements.txt)
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copiar todo código da API
+COPY . .
+
+# Criar diretórios necessários
+RUN mkdir -p /app/models /app/logs && \
+    chmod -R 777 /app/models /app/logs
+
+# Tentar baixar modelo BERT (não falha se não conseguir)
+RUN python3 -c "from transformers import AutoTokenizer, AutoModelForSequenceClassification; \
+    AutoTokenizer.from_pretrained('neuralmind/bert-base-portuguese-cased'); \
+    AutoModelForSequenceClassification.from_pretrained('neuralmind/bert-base-portuguese-cased', num_labels=3)" || echo "BERT download failed, will download on first run"
+
+# Porta
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
+    CMD curl -f http://localhost:8000/api/v1/health || exit 1
+
+# Executar API com 1 worker
+CMD ["python3", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

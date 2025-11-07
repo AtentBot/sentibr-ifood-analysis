@@ -1,0 +1,231 @@
+# ============================================
+# Prometheus Alert Rules - SentiBR
+# ============================================
+
+groups:
+  
+  # ==========================================
+  # API Health & Availability
+  # ==========================================
+  - name: api_alerts
+    interval: 30s
+    rules:
+      
+      # API está down
+      - alert: APIDown
+        expr: up{job="sentibr-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "SentiBR API está down"
+          description: "A API não está respondendo há {{ $value }} minutos."
+      
+      # Alta taxa de erros
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "Alta taxa de erros na API"
+          description: "Taxa de erros 5xx está em {{ $value | humanizePercentage }} nos últimos 5 minutos."
+      
+      # Latência alta
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "Latência alta na API"
+          description: "P95 da latência está em {{ $value }}s nos últimos 5 minutos."
+      
+      # SLA violado (95% das requisições < 500ms)
+      - alert: SLAViolation
+        expr: |
+          (
+            sum(rate(http_request_duration_seconds_bucket{le="0.5"}[5m]))
+            /
+            sum(rate(http_request_duration_seconds_count[5m]))
+          ) < 0.95
+        for: 10m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "SLA violado"
+          description: "Apenas {{ $value | humanizePercentage }} das requisições estão abaixo de 500ms."
+  
+  # ==========================================
+  # Model Performance
+  # ==========================================
+  - name: model_alerts
+    interval: 30s
+    rules:
+      
+      # Baixa confiança nas predições
+      - alert: LowPredictionConfidence
+        expr: avg(prediction_confidence) < 0.7
+        for: 15m
+        labels:
+          severity: warning
+          component: model
+        annotations:
+          summary: "Baixa confiança nas predições"
+          description: "Confiança média das predições está em {{ $value | humanizePercentage }}."
+      
+      # Data drift detectado
+      - alert: DataDriftDetected
+        expr: data_drift_score > 0.3
+        for: 5m
+        labels:
+          severity: warning
+          component: model
+        annotations:
+          summary: "Data drift detectado"
+          description: "Score de drift está em {{ $value }}. Considere retreinar o modelo."
+      
+      # Taxa de predições negativas muito alta
+      - alert: HighNegativeSentimentRate
+        expr: |
+          (
+            sum(rate(predictions_total{sentiment="negative"}[1h]))
+            /
+            sum(rate(predictions_total[1h]))
+          ) > 0.7
+        for: 30m
+        labels:
+          severity: info
+          component: model
+        annotations:
+          summary: "Taxa alta de sentimentos negativos"
+          description: "{{ $value | humanizePercentage }} das predições são negativas na última hora."
+  
+  # ==========================================
+  # Infrastructure
+  # ==========================================
+  - name: infrastructure_alerts
+    interval: 30s
+    rules:
+      
+      # Alto uso de CPU
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "Uso alto de CPU"
+          description: "CPU em {{ $value }}% de uso nos últimos 10 minutos."
+      
+      # Alto uso de memória
+      - alert: HighMemoryUsage
+        expr: (process_resident_memory_bytes / 1024 / 1024 / 1024) > 6
+        for: 10m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "Uso alto de memória"
+          description: "Memória em {{ $value }}GB de uso."
+      
+      # Disco cheio
+      - alert: DiskSpaceRunningOut
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Espaço em disco baixo"
+          description: "Apenas {{ $value | humanizePercentage }} de espaço disponível."
+  
+  # ==========================================
+  # Database
+  # ==========================================
+  - name: database_alerts
+    interval: 30s
+    rules:
+      
+      # PostgreSQL está down
+      - alert: PostgreSQLDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "PostgreSQL está down"
+          description: "O banco de dados não está respondendo."
+      
+      # Muitas conexões abertas
+      - alert: TooManyDatabaseConnections
+        expr: pg_stat_activity_count > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Muitas conexões no banco"
+          description: "{{ $value }} conexões ativas no PostgreSQL."
+      
+      # Redis está down
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: cache
+        annotations:
+          summary: "Redis está down"
+          description: "O cache não está respondendo."
+      
+      # Alto uso de memória no Redis
+      - alert: RedisHighMemory
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Redis com uso alto de memória"
+          description: "Redis usando {{ $value | humanizePercentage }} da memória disponível."
+  
+  # ==========================================
+  # Business Metrics
+  # ==========================================
+  - name: business_alerts
+    interval: 60s
+    rules:
+      
+      # Queda no volume de predições
+      - alert: LowPredictionVolume
+        expr: rate(predictions_total[1h]) < 10
+        for: 30m
+        labels:
+          severity: info
+          component: business
+        annotations:
+          summary: "Volume baixo de predições"
+          description: "Apenas {{ $value }} predições por segundo na última hora."
+      
+      # Muitos feedbacks negativos
+      - alert: HighNegativeFeedbackRate
+        expr: |
+          (
+            sum(rate(feedback_total{feedback_type="negative"}[1h]))
+            /
+            sum(rate(feedback_total[1h]))
+          ) > 0.3
+        for: 1h
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "Taxa alta de feedback negativo"
+          description: "{{ $value | humanizePercentage }} dos feedbacks são negativos."

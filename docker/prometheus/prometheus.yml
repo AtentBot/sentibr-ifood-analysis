@@ -1,0 +1,126 @@
+# ============================================
+# Prometheus Configuration - SentiBR
+# ============================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'sentibr'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alerts.yml"
+
+# Scrape configurations
+scrape_configs:
+  
+  # ==========================================
+  # Prometheus itself
+  # ==========================================
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+          component: 'monitoring'
+  
+  # ==========================================
+  # SentiBR API
+  # ==========================================
+  - job_name: 'sentibr-api'
+    metrics_path: '/api/v1/metrics'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['api:8000']
+        labels:
+          service: 'api'
+          component: 'backend'
+          app: 'sentibr'
+    
+    # Relabel configs para adicionar informações adicionais
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'sentibr-api'
+      
+      - source_labels: [__address__]
+        target_label: __param_target
+      
+      - source_labels: [__param_target]
+        target_label: target
+    
+    # Timeout para scrape
+    scrape_timeout: 10s
+  
+  # ==========================================
+  # PostgreSQL Exporter (se implementado)
+  # ==========================================
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres'
+          component: 'database'
+    scrape_interval: 30s
+  
+  # ==========================================
+  # Redis Exporter (se implementado)
+  # ==========================================
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+          component: 'cache'
+    scrape_interval: 30s
+  
+  # ==========================================
+  # Node Exporter (métricas do sistema)
+  # ==========================================
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node'
+          component: 'infrastructure'
+    scrape_interval: 30s
+  
+  # ==========================================
+  # cAdvisor (métricas de containers)
+  # ==========================================
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          service: 'cadvisor'
+          component: 'infrastructure'
+    scrape_interval: 30s
+  
+  # ==========================================
+  # MLflow (se expor métricas)
+  # ==========================================
+  - job_name: 'mlflow'
+    static_configs:
+      - targets: ['mlflow:5000']
+        labels:
+          service: 'mlflow'
+          component: 'mlops'
+    scrape_interval: 60s
+
+# ==========================================
+# Remote write (opcional - para Grafana Cloud, etc)
+# ==========================================
+# remote_write:
+#   - url: "https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push"
+#     basic_auth:
+#       username: 'your-username'
+#       password: 'your-password'

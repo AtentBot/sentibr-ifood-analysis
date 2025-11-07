@@ -1,0 +1,31 @@
+text,label,rating
+"A comida estava absolutamente deliciosa! Melhor restaurante que já pedi. Voltarei com certeza!",positive,5
+"Entrega muito demorada. Comida chegou fria e o motoboy foi mal educado. Péssima experiência.",negative,1
+"Produto ok, nada excepcional mas também não decepciona. Cumpre o que promete.",neutral,3
+"Excelente atendimento! Chegou antes do prazo e quentinho. Comida de qualidade.",positive,5
+"Horrível. Não recomendo para ninguém. Pior experiência da minha vida com delivery.",negative,1
+"Comida boa, preço justo, entrega no prazo. Recomendo! Vale a pena.",positive,4
+"Pedi batata frita e veio murcha, sem sal. Pizza estava ok mas nada especial.",negative,2
+"Normal. Cumpre o básico. Nada de extraordinário.",neutral,3
+"Adorei! Superou minhas expectativas. Com certeza vou pedir novamente!",positive,5
+"Atendimento horrível, comida sem sabor, nunca mais peço nesse lugar.",negative,1
+"Hambúrguer muito bom, mas a batata poderia ser melhor. No geral, satisfeito.",positive,4
+"Entrega pontual, comida na temperatura certa, tudo certinho.",positive,4
+"Propaganda enganosa. Não era o que esperava. Me senti enganado.",negative,2
+"Achei caro pelo que oferece, mas a qualidade é boa. Custo-benefício questionável.",neutral,3
+"Pior delivery da minha vida. Comida estragada, embalagem péssima.",negative,1
+"Maravilhoso! Surpreendente! Tudo perfeito do início ao fim!",positive,5
+"Meh, nem bom nem ruim. Mediano em todos os aspectos.",neutral,3
+"Embalagem péssima, comida toda bagunçada quando chegou. Desorganização total.",negative,2
+"Primeira vez que peço e gostei muito. Sabor excelente, voltarei a pedir!",positive,5
+"Comida sem tempero, insossa, sem gosto. Não gostei nada.",negative,2
+"Entrega rápida, comida boa, preço justo. Equilibrado.",positive,4
+"Não era o que esperava, mas é aceitável. Poderia ser melhor.",neutral,3
+"Melhor pizza que já comi! Crocante, saborosa, ingredientes frescos!",positive,5
+"Fiquei decepcionado com a qualidade. Esperava mais pelo preço cobrado.",negative,2
+"Bom custo-benefício. Recomendo para quem quer economizar sem perder qualidade.",positive,4
+"Atendimento excelente! Resolveram meu problema rapidamente. Parabéns!",positive,5
+"Comida estava ok, mas o atendimento deixou a desejar. Pouco profissional.",neutral,3
+"Horrível! Nunca mais peço nesse lugar. Experiência traumatizante.",negative,1
+"Sabor médio, porção boa, preço na média. Nada de especial.",neutral,3
+"Delicioso! Tudo perfeito! Melhor escolha que fiz hoje!",positive,5

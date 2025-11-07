@@ -1,0 +1,130 @@
+{
+  "accuracy": 0.933,
+  "precision": 0.9331041438864167,
+  "recall": 0.933,
+  "f1_score": 0.932973637492313,
+  "per_class_metrics": {
+    "negativo": {
+      "precision": 0.9256198347107438,
+      "recall": 0.9464788732394366,
+      "f1": 0.935933147632312,
+      "support": 355
+    },
+    "neutro": {
+      "precision": 0.9353846153846154,
+      "recall": 0.9325153374233128,
+      "f1": 0.9339477726574501,
+      "support": 326
+    },
+    "positivo": {
+      "precision": 0.9391025641025641,
+      "recall": 0.9184952978056427,
+      "f1": 0.9286846275752774,
+      "support": 319
+    }
+  },
+  "confusion_matrix": [
+    [
+      336,
+      9,
+      10
+    ],
+    [
+      13,
+      304,
+      9
+    ],
+    [
+      14,
+      12,
+      293
+    ]
+  ],
+  "error_analysis": {
+    "total_errors": 67,
+    "error_rate": 0.067,
+    "error_distribution": {
+      "negativo_as_neutro": 9,
+      "negativo_as_positivo": 10,
+      "neutro_as_negativo": 13,
+      "neutro_as_positivo": 9,
+      "positivo_as_negativo": 14,
+      "positivo_as_neutro": 12
+    },
+    "error_examples": [
+      {
+        "text": "Review de exemplo número 111",
+        "true_label": "neutro",
+        "pred_label": "negativo",
+        "confidence": 0.5596962040193271
+      },
+      {
+        "text": "Review de exemplo número 247",
+        "true_label": "positivo",
+        "pred_label": "negativo",
+        "confidence": 0.7533957777277838
+      },
+      {
+        "text": "Review de exemplo número 42",
+        "true_label": "positivo",
+        "pred_label": "negativo",
+        "confidence": 0.5319367251679903
+      },
+      {
+        "text": "Review de exemplo número 231",
+        "true_label": "negativo",
+        "pred_label": "neutro",
+        "confidence": 0.49040032573513903
+      },
+      {
+        "text": "Review de exemplo número 306",
+        "true_label": "negativo",
+        "pred_label": "positivo",
+        "confidence": 0.4327400762904135
+      },
+      {
+        "text": "Review de exemplo número 47",
+        "true_label": "negativo",
+        "pred_label": "neutro",
+        "confidence": 0.6734767887395579
+      },
+      {
+        "text": "Review de exemplo número 651",
+        "true_label": "negativo",
+        "pred_label": "neutro",
+        "confidence": 0.6611681778224708
+      },
+      {
+        "text": "Review de exemplo número 703",
+        "true_label": "negativo",
+        "pred_label": "positivo",
+        "confidence": 0.8079008660997236
+      },
+      {
+        "text": "Review de exemplo número 771",
+        "true_label": "negativo",
+        "pred_label": "positivo",
+        "confidence": 0.6417193302790148
+      },
+      {
+        "text": "Review de exemplo número 34",
+        "true_label": "positivo",
+        "pred_label": "negativo",
+        "confidence": 0.7437929190007194
+      }
+    ]
+  },
+  "timestamp": "2025-11-06T12:18:08.890789",
+  "num_samples": 1000,
+  "model_name": "BERT Fine-tuned",
+  "macro_avg": {
+    "precision": 0.9333690047326412,
+    "recall": 0.9324965028227975,
+    "f1": 0.9328551826216799
+  },
+  "weighted_avg": {
+    "precision": 0.9331041438864167,
+    "recall": 0.933,
+    "f1": 0.932973637492313
+  }
+}

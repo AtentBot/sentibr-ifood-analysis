@@ -1,0 +1,153 @@
+# ============================================
+# SentiBR - Docker Compose Development
+# Override para desenvolvimento com hot reload
+# ============================================
+
+version: '3.8'
+
+services:
+  
+  # ==========================================
+  # API - Development Mode
+  # ==========================================
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+      target: builder  # Use o estágio builder para ter ferramentas de dev
+    volumes:
+      # Mount código para hot reload
+      - ../src:/app/src:ro
+      - ../tests:/app/tests:ro
+      - ../notebooks:/app/notebooks:ro
+      # Logs e dados locais
+      - ../logs:/app/logs
+      - ../data:/app/data
+    environment:
+      # Development settings
+      ENVIRONMENT: development
+      LOG_LEVEL: DEBUG
+      RELOAD: "true"
+      WORKERS: 1  # Menos workers para debug
+    command: >
+      uvicorn src.api.main:app 
+      --host 0.0.0.0 
+      --port 8000 
+      --reload 
+      --reload-dir /app/src
+      --log-level debug
+    ports:
+      # Expor porta adicional para debugger
+      - "8000:8000"
+      - "5678:5678"  # Python debugger
+  
+  # ==========================================
+  # Frontend - Development Mode
+  # ==========================================
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+      target: builder
+    volumes:
+      # Mount código para hot reload
+      - ../frontend:/app/frontend:ro
+    environment:
+      # Development settings
+      STREAMLIT_SERVER_HEADLESS: "false"
+      STREAMLIT_BROWSER_GATHER_USAGE_STATS: "false"
+      STREAMLIT_SERVER_FILE_WATCHER_TYPE: "poll"
+    command: >
+      streamlit run frontend/app.py 
+      --server.port=8501 
+      --server.address=0.0.0.0
+      --server.fileWatcherType=poll
+      --server.runOnSave=true
+      --logger.level=debug
+  
+  # ==========================================
+  # PostgreSQL - Development
+  # ==========================================
+  postgres:
+    ports:
+      # Expor porta para acesso direto do host
+      - "5432:5432"
+    environment:
+      # Mais verbose logging
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=pt_BR.UTF-8 --auth=trust"
+  
+  # ==========================================
+  # Redis - Development
+  # ==========================================
+  redis:
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --loglevel debug
+  
+  # ==========================================
+  # MLflow - Development
+  # ==========================================
+  mlflow:
+    ports:
+      - "5000:5000"
+    environment:
+      MLFLOW_TRACKING_URI: http://localhost:5000
+  
+  # ==========================================
+  # Mailhog - Email Testing (Dev only)
+  # ==========================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: sentibr-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - sentibr-network
+  
+  # ==========================================
+  # Adminer - Database UI (Dev only)
+  # ==========================================
+  adminer:
+    image: adminer:latest
+    container_name: sentibr-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - sentibr-network
+    depends_on:
+      - postgres
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: pepa-linha
+  
+  # ==========================================
+  # Redis Commander - Redis UI (Dev only)
+  # ==========================================
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: sentibr-redis-commander
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    networks:
+      - sentibr-network
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:sentibr_redis_2024
+      HTTP_USER: admin
+      HTTP_PASSWORD: admin
+
+# ==========================================
+# Development volumes (não persistentes)
+# ==========================================
+volumes:
+  # Override volumes para desenvolvimento
+  # Usar named volumes para performance no macOS/Windows
+  postgres-data:
+  redis-data:
+  mlflow-data:
+  prometheus-data:
+  grafana-data:

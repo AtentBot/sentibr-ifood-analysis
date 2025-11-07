@@ -1,0 +1,113 @@
+# Core ML/DL
+torch
+transformers
+datasets
+scikit-learn
+numpy
+pandas
+scipy
+accelerate
+streamlit
+streamlit-option-menu
+
+# API Framework
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart
+
+# MLOps & Experiment Tracking
+mlflow
+optuna
+great-expectations
+
+# Visualization
+matplotlib
+seaborn
+
+# Progress bars
+tqdm
+
+# API Framework
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart
+
+# Frontend
+streamlit
+plotly
+altair
+
+# Monitoring & Observability
+prometheus-client
+prometheus-fastapi-instrumentator
+python-json-logger
+
+# LLM Integration
+openai
+tiktoken
+
+# Explainability
+shap
+lime
+
+# Data Processing & Visualization
+pandas
+numpy
+scikit-learn
+nltk
+emoji
+unidecode
+plotly
+
+# Async support
+aiohttp
+asyncio
+python-dotenv
+
+# Testing (optional)
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Utilities
+python-dotenv
+pyyaml
+requests
+tqdm
+loguru
+matplotlib 
+seaborn 
+wordcloud
+python-dateutil
+
+# Optional: Explainability
+lime
+shap
+
+# Optional: OpenAI integration
+openai
+
+# Development
+pytest
+pytest-asyncio
+httpx
+black
+flake8
+mypy
+
+# Load Testing
+locust
+python-json-logger
+
+# Jupyter (para notebooks)
+jupyter
+ipykernel
+nbformat
+
+# Already required from other phases (for reference)
+# torch
+# transformers
+# fastapi
+# pydantic

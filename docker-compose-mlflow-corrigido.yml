@@ -1,0 +1,187 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # MLFLOW - Experiment Tracking (CORRIGIDO)
+  # ============================================================================
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.9.2
+    container_name: sentibr-mlflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow/artifacts:/mlflow/artifacts
+      - ./mlflow/mlruns:/mlflow/mlruns
+    environment:
+      # Backend store (SQLite)
+      - MLFLOW_BACKEND_STORE_URI=sqlite:////mlflow/mlruns/mlflow.db
+      # Artifact store
+      - MLFLOW_ARTIFACT_ROOT=/mlflow/artifacts
+      # Server config
+      - MLFLOW_HOST=0.0.0.0
+      - MLFLOW_PORT=5000
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:////mlflow/mlruns/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+      --host 0.0.0.0
+      --port 5000
+    networks:
+      - sentibr-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ============================================================================
+  # POSTGRES - Database (para API e MLflow futuro)
+  # ============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: sentibr-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=sentibr
+      - POSTGRES_USER=sentibr
+      - POSTGRES_PASSWORD=sentibr_2024
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    networks:
+      - sentibr-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentibr"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # REDIS - Cache
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: sentibr-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - sentibr-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # API - FastAPI Backend
+  # ============================================================================
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: sentibr-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+      - ./models:/app/models
+    environment:
+      - ENVIRONMENT=production
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=sentibr
+      - POSTGRES_USER=sentibr
+      - POSTGRES_PASSWORD=sentibr_2024
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - MODEL_PATH=/app/models/bert_finetuned
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mlflow:
+        condition: service_healthy
+    networks:
+      - sentibr-network
+    restart: unless-stopped
+
+  # ============================================================================
+  # FRONTEND - Streamlit
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sentibr-frontend
+    ports:
+      - "8502:8501"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - API_URL=http://api:8000
+      - MLFLOW_URL=http://mlflow:5000
+    depends_on:
+      - api
+    networks:
+      - sentibr-network
+    restart: unless-stopped
+
+  # ============================================================================
+  # PROMETHEUS - Metrics
+  # ============================================================================
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: sentibr-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - sentibr-network
+    restart: unless-stopped
+
+  # ============================================================================
+  # GRAFANA - Dashboards
+  # ============================================================================
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: sentibr-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=sentibr_grafana_2024
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+    networks:
+      - sentibr-network
+    restart: unless-stopped
+
+networks:
+  sentibr-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:

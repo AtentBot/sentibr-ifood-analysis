@@ -1,0 +1,183 @@
+# ============================================
+# .dockerignore - SentiBR
+# Arquivos a serem ignorados no build Docker
+# ============================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+*.cover
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Data
+data/raw/*
+data/processed/*
+data/external/*
+!data/.gitkeep
+
+# Models (grandes demais)
+models/*.bin
+models/*.pt
+models/*.pth
+models/*.h5
+models/*.pkl
+!models/.gitkeep
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# Documentation
+docs/_build/
+docs/build/
+site/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+test-results/
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+Dockerfile*
+
+# Backup
+backups/
+*.backup
+*.dump
+
+# OS
+Thumbs.db
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Prometheus
+prometheus_data/
+
+# Grafana
+grafana_data/
+
+# Node modules (se houver frontend Node.js)
+node_modules/
+npm-debug.log
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# Large files
+*.csv
+*.json
+!requirements.txt
+!package.json
+
+# README e documentação (não necessários no container)
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+*.md
+!src/**/*.md
+
+# CI/CD
+.circleci/
+.travis.yml
+azure-pipelines.yml
+.gitlab-ci.yml
+Jenkinsfile
+
+# Kubernetes
+k8s/
+kubernetes/
+*.yaml
+!docker-compose.yml
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# Scripts de desenvolvimento
+scripts/dev/
+scripts/local/
+*.sh
+!docker/*.sh
+
+# Cache e build
+.cache/
+.next/
+out/
+.nuxt/
+dist/
